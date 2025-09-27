@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-export default function WasifEngineeringWebsite() {
+export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
     company: "",
@@ -11,15 +11,18 @@ export default function WasifEngineeringWebsite() {
     details: "",
   });
 
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState(null); // success/error/sending
 
+  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload
     setStatus("Sending...");
+    console.log("Sending form data:", formData); // Debug
 
     try {
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/send-sms`, {
@@ -29,6 +32,7 @@ export default function WasifEngineeringWebsite() {
       });
 
       const data = await res.json();
+      console.log("Backend response:", data); // Debug
 
       if (data.success) {
         setStatus("✅ Request sent successfully!");
@@ -331,120 +335,92 @@ export default function WasifEngineeringWebsite() {
         </div>
       </section>
 
-  {/* CONTACT / QUOTE FORM */}
-<section id="contact" className="bg-indigo-700 text-white py-14">
-  <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-8 items-center">
-    <div>
-      <h3 className="text-2xl font-semibold">Get in Touch</h3>
-      <p className="mt-2 text-indigo-100">
-        Request a site visit, quote or consultation. Provide project details below and our team will respond promptly.
-      </p>
+  <div className="min-h-screen font-sans bg-gray-50 text-gray-800">
+      {/* CONTACT / QUOTE FORM */}
+      <section id="contact" className="bg-indigo-700 text-white py-14">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h3 className="text-2xl font-semibold">Get in Touch</h3>
+            <p className="mt-2 text-indigo-100">
+              Request a site visit, quote or consultation. Provide project details below and our team will respond promptly.
+            </p>
 
-      <div className="mt-6 text-sm">
-        <p>📞 Phone: <strong>+92-3232791142 | +92-11-2724549</strong></p>
-        <p>✉️ Email: <strong>wasifengeineering@gmail.com</strong></p>
-        <p>
-          📍 Office: <strong>Office # 3, RC 5/104, Hassan Ali Hoti Building, Rati Line, Gazdarabad, Ranchoreline, Karachi</strong>
-        </p>
-      </div>
+            <div className="mt-6 text-sm">
+              <p>📞 Phone: <strong>+92-3232791142 | +92-11-2724549</strong></p>
+              <p>✉️ Email: <strong>wasifengeineering@gmail.com</strong></p>
+              <p>
+                📍 Office: <strong>Office # 3, RC 5/104, Hassan Ali Hoti Building, Rati Line, Gazdarabad, Ranchoreline, Karachi</strong>
+              </p>
+            </div>
+          </div>
+
+          {/* FORM WITH FETCH */}
+          <form
+            id="quote"
+            onSubmit={handleSubmit}
+            className="bg-white text-gray-800 p-6 rounded-lg shadow"
+          >
+            <div className="grid gap-3">
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Your name"
+                className="p-3 border rounded"
+                required
+              />
+              <input
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="Company (optional)"
+                className="p-3 border rounded"
+              />
+              <input
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Phone"
+                className="p-3 border rounded"
+                required
+              />
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                className="p-3 border rounded"
+              />
+              <select
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                className="p-3 border rounded"
+              >
+                <option value="">Service required (select)</option>
+                <option>Waterproofing</option>
+                <option>Road Works</option>
+                <option>Machinery Rental</option>
+                <option>Construction / Turnkey</option>
+                <option>Consultation & Testing</option>
+              </select>
+              <textarea
+                name="details"
+                value={formData.details}
+                onChange={handleChange}
+                placeholder="Project details / site address"
+                className="p-3 border rounded h-24"
+              />
+              <button type="submit" className="bg-indigo-700 text-white px-4 py-3 rounded">
+                Send Request
+              </button>
+              {status && <p className="text-sm mt-2">{status}</p>}
+            </div>
+          </form>
+        </div>
+      </section>
     </div>
-
-    {/* FORM WITH FETCH */}
-    <form
-      id="quote"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setStatus("Sending...");
-
-        try {
-          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/send-sms`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
-
-          const data = await res.json();
-
-          if (data.success) {
-            setStatus("✅ Request sent successfully!");
-            setFormData({
-              name: "",
-              company: "",
-              phone: "",
-              email: "",
-              service: "",
-              details: "",
-            });
-          } else {
-            setStatus("❌ Failed: " + (data.message || "Server error"));
-          }
-        } catch (err) {
-          console.error(err);
-          setStatus("❌ Error sending request.");
-        }
-      }}
-      className="bg-white text-gray-800 p-6 rounded-lg shadow"
-    >
-      <div className="grid gap-3">
-        <input
-          name="name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="Your name"
-          className="p-3 border rounded"
-          required
-        />
-        <input
-          name="company"
-          value={formData.company}
-          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-          placeholder="Company (optional)"
-          className="p-3 border rounded"
-        />
-        <input
-          name="phone"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          placeholder="Phone"
-          className="p-3 border rounded"
-          required
-        />
-        <input
-          name="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          placeholder="Email"
-          className="p-3 border rounded"
-        />
-        <select
-          name="service"
-          value={formData.service}
-          onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-          className="p-3 border rounded"
-        >
-          <option value="">Service required (select)</option>
-          <option>Waterproofing</option>
-          <option>Road Works</option>
-          <option>Machinery Rental</option>
-          <option>Construction / Turnkey</option>
-          <option>Consultation & Testing</option>
-        </select>
-        <textarea
-          name="details"
-          value={formData.details}
-          onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-          placeholder="Project details / site address"
-          className="p-3 border rounded h-24"
-        />
-        <button type="submit" className="bg-indigo-700 text-white px-4 py-3 rounded">
-          Send Request
-        </button>
-        {status && <p className="text-sm mt-2">{status}</p>}
-      </div>
-    </form>
-  </div>
-</section>
-
+  
 
       {/* FOOTER */}
       <footer className="bg-gray-900 text-gray-300 py-8">
